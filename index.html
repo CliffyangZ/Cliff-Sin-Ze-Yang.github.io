@@ -235,31 +235,33 @@
 
     .sidebar-social {
       display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
+      flex-wrap: wrap;
+      gap: 0.65rem;
     }
 
     .sidebar-social a {
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      width: 38px;
+      height: 38px;
       color: var(--fg-3);
       text-decoration: none;
-      transition: color 0.22s;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      transition: color 0.22s, border-color 0.22s, transform 0.22s;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      justify-content: center;
     }
-    .sidebar-social a:hover { color: var(--fg); }
-    .sidebar-social a::before {
-      content: '';
-      width: 12px;
-      height: 1px;
-      background: currentColor;
-      flex-shrink: 0;
-      transition: width 0.22s;
+    .sidebar-social a:hover {
+      color: var(--fg);
+      border-color: var(--fg-2);
+      transform: translateY(-2px);
     }
-    .sidebar-social a:hover::before { width: 18px; }
+    .sidebar-social svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
 
     /* ── MAIN CONTENT ─────────────────────────────────────── */
     #main {
@@ -696,6 +698,71 @@
     }
     .mobile-nav-links a:hover { color: var(--fg); }
 
+    /* ── PROJECT MODAL ───────────────────────────────────────── */
+    #proj-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+
+    #proj-modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #proj-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(6px);
+    }
+
+    #proj-modal-panel {
+      position: relative;
+      z-index: 1;
+      width: min(860px, calc(100vw - 2rem));
+      height: min(88vh, 900px);
+      background: var(--bg);
+      border: 1px solid var(--border-2);
+      overflow: hidden;
+      transform: scale(0.96) translateY(10px);
+      transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #proj-modal.open #proj-modal-panel {
+      transform: scale(1) translateY(0);
+    }
+
+    #proj-modal-frame {
+      width: 100%;
+      flex: 1;
+      border: none;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      #proj-modal-panel {
+        width: 100vw;
+        height: 100dvh;
+        border: none;
+      }
+    }
+
+    button.p-link {
+      background: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+    }
+
     /* ── RESPONSIVE ───────────────────────────────────────── */
     @media (max-width: 860px) {
       :root { --sidebar: 220px; }
@@ -741,7 +808,7 @@
         <img src="assets/cliff_cool.JPG" alt="Cliff Yang" class="hero-photo">
       </div>
       <h1 class="sidebar-name">Cliff<br>Sin-Ze Yang</h1>
-      <p class="sidebar-role">CS Undergraduate</p>
+      <p class="sidebar-role"> CYCU ICBD Undergraduate</p>
       <div class="sidebar-interests">
         <span class="interest-chip">AI</span>
         <span class="interest-chip">Quantum</span>
@@ -763,10 +830,10 @@
       <p class="toc-label">Contents</p>
       <ul>
         <li><a href="#about"    class="toc-link" data-section="about">   <span class="toc-num">I.</span>   About</a></li>
-        <li><a href="#research" class="toc-link" data-section="research"><span class="toc-num">II.</span>  Research</a></li>
-        <li><a href="#projects" class="toc-link" data-section="projects"><span class="toc-num">III.</span> Projects</a></li>
-        <li><a href="#news"     class="toc-link" data-section="news">    <span class="toc-num">IV.</span>  News</a></li>
-        <li><a href="#contact"  class="toc-link" data-section="contact"> <span class="toc-num">V.</span>   Contact</a></li>
+        <!-- <li><a href="#research" class="toc-link" data-section="research"><span class="toc-num">II.</span>  Research</a></li> -->
+        <li><a href="#projects" class="toc-link" data-section="projects"><span class="toc-num">II.</span> Projects</a></li>
+        <li><a href="#news"     class="toc-link" data-section="news">    <span class="toc-num">III.</span>  News</a></li>
+        <li><a href="#contact"  class="toc-link" data-section="contact"> <span class="toc-num">IV.</span>   Contact</a></li>
       </ul>
     </nav>
 
@@ -777,12 +844,21 @@
 
     <!-- Social links -->
     <nav class="sidebar-social" aria-label="Social links">
-      <a href="mailto:xinze0130@gmail.com">Email</a>
-      <a href="https://github.com/Cliff-Sin-Ze-Yang" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/%E6%AC%A3%E6%BE%A4-%E6%A5%8A-68483a347/" target="_blank">LinkedIn</a>
-      <a href="https://x.com/yang_cliff013" target="_blank">X / Twitter</a>
-      <a href="https://www.instagram.com/cliffhappyhorse/" target="_blank">Instagram</a>
-      <a href="#" target="_blank">CV</a>
+      <a href="https://github.com/CliffyangZ" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.78.62-3.37-1.22-3.37-1.22-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.97c.85 0 1.7.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .27.18.6.69.49A10.07 10.07 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/%E6%AC%A3%E6%BE%A4-%E6%A5%8A-68483a347/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5ZM.3 8h4.4v15H.3V8Zm7.1 0h4.22v2.05h.06c.59-1.12 2.03-2.3 4.18-2.3 4.47 0 5.3 2.95 5.3 6.78V23h-4.4v-7.51c0-1.79-.03-4.1-2.49-4.1-2.5 0-2.88 1.96-2.88 3.97V23H7.4V8Z" transform="translate(1.4) scale(.9)"/></svg>
+      </a>
+      <a href="https://medium.com/@xinze0130" target="_blank" rel="noopener" aria-label="Medium">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.37 7.2c.04-.41-.12-.82-.44-1.1L2.68 4.58V4.35h5.1l3.94 8.65 3.46-8.65h4.86v.23l-1.07 1.03a.31.31 0 0 0-.12.3v12.18a.31.31 0 0 0 .12.3l1.05 1.03v.23h-6.12v-.23l1.09-1.06c.11-.11.11-.14.11-.3V8.2l-4.35 11.41h-.42L5.26 8.2v8.3c-.03.31.08.62.3.84l1.42 1.73v.23H2.95v-.23l1.42-1.73c.22-.22.32-.53.29-.84V7.2Z"/></svg>
+      </a>
+      <a href="mailto:xinze0130@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm9 8.2L4.75 7H4v.78l8 6.86 8-6.86V7h-.75L12 13.2Z"/></svg>
+      </a>
+      <a href="#" target="_blank" rel="noopener" aria-label="CV">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l5 5v15H6V2Zm7 1.8V8h4.2L13 3.8ZM8.8 13.3c0 1.9 1.16 3.08 2.94 3.08.98 0 1.75-.32 2.3-.96l-.92-.95c-.36.37-.77.55-1.3.55-.88 0-1.42-.67-1.42-1.72 0-1.03.56-1.71 1.42-1.71.52 0 .92.18 1.26.54l.93-.95c-.53-.63-1.28-.95-2.25-.95-1.78 0-2.96 1.2-2.96 3.04Z"/></svg>
+      </a>
     </nav>
 
   </div>
@@ -800,16 +876,7 @@
     </div>
 
     <p class="about-intro reveal">
-      I am an undergraduate studying Computer Science, drawn to the frontier where
-      intelligence, physics, and embodied autonomy converge. My curiosity spans the
-      full spectrum — from the abstract mathematics of quantum information theory to
-      the real-world constraints of systems that move, see, and act.
-    </p>
-    <p class="about-intro reveal">
-      I believe the most interesting problems today live at intersections: What does
-      it mean for a machine to reason? How does quantum mechanics redefine the limits
-      of computation? How can an autonomous agent bridge symbol and sensation?
-      I am here to explore that synthesis.
+      I am a undergraduate student studying AI, Quantum Computing. 
     </p>
 
     <div class="about-meta reveal">
@@ -836,7 +903,7 @@
   </section>
 
   <!-- RESEARCH -->
-  <section class="sec" id="research">
+  <!-- <section class="sec" id="research">
     <div class="sec-head reveal">
       <span class="sec-num">II.</span>
       <h2 class="sec-title">Research Interests</h2>
@@ -860,24 +927,24 @@
         <p>Embodied intelligence, robot perception, and autonomous systems. Fascinated by grounding abstract reasoning in physical action — bridging simulation, sensor fusion, and the messy real world.</p>
       </div>
     </div>
-  </section>
+  </section> -->
 
   <!-- PROJECTS -->
   <section class="sec" id="projects">
     <div class="sec-head reveal">
-      <span class="sec-num">III.</span>
+      <span class="sec-num">II.</span>
       <h2 class="sec-title">Projects</h2>
       <div class="sec-rule"></div>
     </div>
 
     <div class="p-grid">
       <div class="p-card reveal">
-        <h3 class="p-title">Project Aether</h3>
+        <h3 class="p-title">AI Basketball Referee</h3>
         <div class="p-tags">
           <span class="tag">AI</span><span class="tag">Python</span><span class="tag">PyTorch</span>
         </div>
         <p class="p-desc">A neural architecture exploration into latent world models — training agents to internalize compact representations of environment dynamics without explicit supervision.</p>
-        <a href="#" class="p-link">View →</a>
+        <button class="p-link" data-project="project/ai-basketball-referee.html">View →</button>
       </div>
 
       <div class="p-card reveal d1">
@@ -886,33 +953,16 @@
           <span class="tag">Quantum</span><span class="tag">Python</span><span class="tag">Qiskit</span>
         </div>
         <p class="p-desc">A lightweight quantum circuit simulator implementing foundational quantum gates and algorithms — Grover's search and Shor's factoring — built from first principles.</p>
-        <a href="#" class="p-link">View →</a>
+        <button class="p-link" data-project="project/quantum-circuit-sim.html">View →</button>
       </div>
 
-      <div class="p-card reveal">
-        <h3 class="p-title">Autonomous Navigation</h3>
-        <div class="p-tags">
-          <span class="tag">Robotics</span><span class="tag">ROS</span><span class="tag">C++</span>
-        </div>
-        <p class="p-desc">Path-planning and sensor fusion system for mobile robot navigation in dynamic environments, integrating SLAM and lidar point-cloud processing.</p>
-        <a href="#" class="p-link">View →</a>
-      </div>
-
-      <div class="p-card reveal d1">
-        <h3 class="p-title">This Website</h3>
-        <div class="p-tags">
-          <span class="tag">Web</span><span class="tag">HTML/CSS/JS</span><span class="tag">Canvas</span>
-        </div>
-        <p class="p-desc">Hand-crafted personal site. Van Gogh–inspired particle flow field on canvas. Baroque-minimal aesthetic — black, white, and gray only.</p>
-        <a href="https://github.com/Cliff-Sin-Ze-Yang/Cliff-Sin-Ze-Yang.github.io" class="p-link" target="_blank">Source →</a>
-      </div>
     </div>
   </section>
 
   <!-- NEWS -->
   <section class="sec" id="news">
     <div class="sec-head reveal">
-      <span class="sec-num">IV.</span>
+      <span class="sec-num">III.</span>
       <h2 class="sec-title">News</h2>
       <div class="sec-rule"></div>
     </div>
@@ -932,7 +982,7 @@
   <!-- CONTACT -->
   <section id="contact">
     <div class="sec-head reveal" style="padding: 5rem 3.5rem 0; max-width:760px;">
-      <span class="sec-num">V.</span>
+      <span class="sec-num">IV.</span>
       <h2 class="sec-title">Contact</h2>
       <div class="sec-rule"></div>
     </div>
@@ -943,7 +993,6 @@
           <h3>Get in touch</h3>
           <div class="contact-links">
             <a href="mailto:xinze0130@gmail.com">xinze0130@gmail.com</a>
-            <a href="#">Download CV</a>
           </div>
         </div>
         <div class="contact-block">
@@ -951,8 +1000,6 @@
           <div class="contact-links">
             <a href="https://github.com/Cliff-Sin-Ze-Yang" target="_blank">GitHub</a>
             <a href="https://www.linkedin.com/in/%E6%AC%A3%E6%BE%A4-%E6%A5%8A-68483a347/" target="_blank">LinkedIn</a>
-            <a href="https://x.com/yang_cliff013" target="_blank">X / Twitter</a>
-            <a href="https://www.instagram.com/cliffhappyhorse/" target="_blank">Instagram</a>
           </div>
         </div>
       </div>
@@ -962,6 +1009,14 @@
   </section>
 
 </main>
+
+<!-- PROJECT MODAL -->
+<div id="proj-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div id="proj-modal-backdrop"></div>
+  <div id="proj-modal-panel">
+    <iframe id="proj-modal-frame" src="" title="Project detail"></iframe>
+  </div>
+</div>
 
 <!-- LAMP WIDGET -->
 <div id="lamp-widget" aria-label="Toggle theme">
@@ -1130,6 +1185,61 @@
     { threshold: 0.08 }
   );
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+
+/* ── PROJECT MODAL ────────────────────────────────────────────── */
+(function () {
+  const modal    = document.getElementById('proj-modal');
+  const backdrop = document.getElementById('proj-modal-backdrop');
+  const frame    = document.getElementById('proj-modal-frame');
+
+  function openModal(src) {
+    frame.src = src;
+    modal.removeAttribute('aria-hidden');
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    syncThemeToFrame();
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(() => { frame.src = ''; }, 320);
+  }
+
+  function syncThemeToFrame() {
+    const isLight = document.body.classList.contains('light');
+    try { frame.contentWindow.postMessage(isLight ? 'theme:light' : 'theme:dark', '*'); }
+    catch (_) {}
+  }
+
+  /* open on View button click */
+  document.querySelectorAll('.p-link[data-project]').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.project));
+  });
+
+  /* close on backdrop click */
+  backdrop.addEventListener('click', closeModal);
+
+  /* close on ESC */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  /* close message from iframe */
+  window.addEventListener('message', e => {
+    if (e.data === 'proj-close') closeModal();
+    if (e.data === 'proj-ready') syncThemeToFrame();
+  });
+
+  /* keep iframe in sync when theme changes */
+  const lampCord = document.getElementById('lamp-cord-wrap');
+  if (lampCord) {
+    lampCord.addEventListener('click', () => {
+      setTimeout(syncThemeToFrame, 250);
+    });
+  }
 })();
 </script>
 </body>

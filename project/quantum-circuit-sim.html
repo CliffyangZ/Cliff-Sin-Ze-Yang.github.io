@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Circuit Simulator — Cliff Yang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #080808;
+      --bg-2:    #0d0d0d;
+      --bg-3:    #161616;
+      --fg:      #efefef;
+      --fg-2:    #999;
+      --fg-3:    #515151;
+      --border:  #1c1c1c;
+      --border-2:#2c2c2c;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    body.light {
+      --bg:      #f8f6f1;
+      --bg-2:    #f2efe8;
+      --bg-3:    #ebe7dd;
+      --fg:      #1c1c1c;
+      --fg-2:    #555;
+      --fg-3:    #999;
+      --border:  #ddd8cc;
+      --border-2:#ccc5b5;
+    }
+
+    .proj-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(8px);
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    body.light .proj-topbar { background: rgba(248,246,241,0.95); }
+
+    .proj-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+    }
+
+    .proj-breadcrumb a {
+      color: var(--fg-3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .proj-breadcrumb a:hover { color: var(--fg-2); }
+    .proj-breadcrumb-sep { opacity: 0.4; }
+
+    .proj-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--fg-3);
+      cursor: pointer;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .proj-close:hover { color: var(--fg); border-color: var(--fg-2); }
+
+    .proj-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3.5rem 2rem 5rem;
+    }
+
+    .proj-header { margin-bottom: 2.5rem; }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+      border: 1px solid var(--border);
+      padding: 0.1rem 0.45rem;
+    }
+
+    .proj-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+
+    .proj-subtitle {
+      font-size: 0.88rem;
+      color: var(--fg-2);
+      line-height: 1.7;
+    }
+
+    .orn {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2.4rem 0;
+      color: var(--fg-3);
+      opacity: 0.35;
+    }
+    .orn-line { flex: 1; height: 1px; background: currentColor; }
+
+    .proj-section { margin-bottom: 2.4rem; }
+
+    .proj-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      margin-bottom: 0.9rem;
+      color: var(--fg);
+    }
+
+    .proj-section p {
+      font-size: 0.85rem;
+      color: var(--fg-2);
+      line-height: 1.85;
+      margin-bottom: 0.75rem;
+    }
+
+    .proj-section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .proj-section ul li {
+      font-size: 0.83rem;
+      color: var(--fg-2);
+      padding-left: 1.2rem;
+      position: relative;
+      line-height: 1.65;
+    }
+
+    .proj-section ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--fg-3);
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.5rem;
+    }
+
+    .tech-item {
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      padding: 0.7rem 0.9rem;
+      position: relative;
+    }
+
+    .tech-item::before {
+      content: '';
+      position: absolute;
+      top: 4px; left: 4px;
+      width: 8px; height: 8px;
+      border-top: 1px solid var(--fg-3);
+      border-left: 1px solid var(--fg-3);
+    }
+
+    .tech-item-name {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+
+    .tech-item-role {
+      font-size: 0.65rem;
+      color: var(--fg-3);
+      margin-top: 0.2rem;
+    }
+
+    /* math formula block */
+    .formula-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--fg-3);
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--fg-2);
+      overflow-x: auto;
+    }
+
+    .proj-links { display: flex; gap: 0.9rem; margin-top: 0.5rem; flex-wrap: wrap; }
+
+    .proj-ext-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .proj-ext-link:hover { color: var(--fg); border-color: var(--fg-2); }
+
+    .proj-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.63rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+      margin-bottom: 0.6rem;
+    }
+
+    .status-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #88aaff;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="proj-topbar">
+  <div class="proj-breadcrumb">
+    <a href="../index.html">Cliff Yang</a>
+    <span class="proj-breadcrumb-sep">›</span>
+    <span>Projects</span>
+    <span class="proj-breadcrumb-sep">›</span>
+    <span>Quantum Circuit Sim</span>
+  </div>
+  <button class="proj-close" id="close-btn">Close ✕</button>
+</div>
+
+<div class="proj-content">
+
+  <div class="proj-header">
+    <div class="proj-tags">
+      <span class="tag">Quantum</span>
+      <span class="tag">Python</span>
+      <span class="tag">Qiskit</span>
+      <span class="tag">NumPy</span>
+    </div>
+    <div class="proj-status">
+      <span class="status-dot"></span>
+      Completed
+    </div>
+    <h1 class="proj-title">Quantum Circuit Simulator</h1>
+    <p class="proj-subtitle">A lightweight simulator for quantum circuits built from first principles — implementing fundamental gates, statevector simulation, and landmark algorithms including Grover's search and Shor's factoring.</p>
+  </div>
+
+  <div class="orn" aria-hidden="true">
+    <div class="orn-line"></div>
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor">
+      <path d="M7 1 L8 6 L13 7 L8 8 L7 13 L6 8 L1 7 L6 6 Z"/>
+    </svg>
+    <div class="orn-line"></div>
+  </div>
+
+  <div class="proj-section">
+    <h2>Overview</h2>
+    <p>Most quantum computing education relies on high-level frameworks that abstract away the underlying mathematics. This simulator was built as an exercise in understanding quantum mechanics from the ground up — representing quantum states as complex vectors and gates as unitary matrices, then composing them to build circuits.</p>
+    <p>The core engine operates on statevectors using tensor product composition for multi-qubit systems. Starting from single-qubit gates (Hadamard, Pauli-X/Y/Z, Phase), the simulator supports entangling gates (CNOT, Toffoli) and full measurement with collapse semantics.</p>
+  </div>
+
+  <div class="proj-section">
+    <h2>Core Concepts</h2>
+    <p>A quantum state of n qubits is represented as a complex vector of dimension 2ⁿ. Gate application is matrix multiplication:</p>
+    <div class="formula-block">|ψ'⟩ = U |ψ⟩,  where U ∈ U(2ⁿ)</div>
+    <p>Multi-qubit gates are constructed via Kronecker products. For a single-qubit gate G acting on qubit k of an n-qubit system:</p>
+    <div class="formula-block">U = I⊗(k) ⊗ G ⊗ I⊗(n−k−1)</div>
+  </div>
+
+  <div class="proj-section">
+    <h2>Implemented Algorithms</h2>
+    <ul>
+      <li>Grover's search — quadratic speedup for unstructured database search using amplitude amplification</li>
+      <li>Shor's factoring — exponential speedup for integer factorization via quantum Fourier transform</li>
+      <li>Quantum Teleportation — entanglement-based state transfer protocol</li>
+      <li>Deutsch-Jozsa — exponential oracle query speedup over classical deterministic algorithms</li>
+      <li>Quantum Fourier Transform — the core primitive underlying many quantum speedups</li>
+    </ul>
+  </div>
+
+  <div class="proj-section">
+    <h2>Tech Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-item-name">Python</div>
+        <div class="tech-item-role">Core language</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-item-name">NumPy</div>
+        <div class="tech-item-role">Linear algebra</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-item-name">Qiskit</div>
+        <div class="tech-item-role">Validation &amp; reference</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-item-name">Matplotlib</div>
+        <div class="tech-item-role">State visualization</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-section">
+    <h2>Links</h2>
+    <div class="proj-links">
+      <a href="https://github.com/CliffyangZ" target="_blank" rel="noopener" class="proj-ext-link">
+        GitHub →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const closeBtn = document.getElementById('close-btn');
+  const inIframe = window.self !== window.top;
+
+  closeBtn.addEventListener('click', () => {
+    if (inIframe) {
+      window.parent.postMessage('proj-close', '*');
+    } else {
+      history.length > 1 ? history.back() : (window.location.href = '../index.html');
+    }
+  });
+
+  if (inIframe) {
+    window.addEventListener('message', e => {
+      if (e.data === 'theme:light') document.body.classList.add('light');
+      if (e.data === 'theme:dark')  document.body.classList.remove('light');
+    });
+    window.parent.postMessage('proj-ready', '*');
+  }
+</script>
+</body>
+</html>
