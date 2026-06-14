@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cliff Sin-Ze Yang</title>
+  <title>Cliff Yang</title>
+  <link rel="icon" href="assets/cliffgood.jpg" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
@@ -554,6 +555,103 @@
       letter-spacing: 0.05em;
     }
 
+    /* ── LIGHT THEME ─────────────────────────────────────── */
+    body.light {
+      --bg:      #f8f6f1;
+      --bg-2:    #f2efe8;
+      --bg-3:    #ebe7dd;
+      --fg:      #1c1c1c;
+      --fg-2:    #555;
+      --fg-3:    #999;
+      --border:  #ddd8cc;
+      --border-2:#ccc5b5;
+    }
+
+    body, #sidebar, #sidebar * { transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
+
+    body.light .mobile-bar { background: rgba(248,246,241,0.92); }
+
+    /* ── LAMP WIDGET ──────────────────────────────────────── */
+    #lamp-widget {
+      position: fixed;
+      top: 0;
+      right: 3rem;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    #lamp-wire-top {
+      width: 1px;
+      height: 38px;
+      background: var(--fg-3);
+      opacity: 0.45;
+    }
+
+    #lamp-body { position: relative; pointer-events: none; }
+
+    #lamp-shade-svg { width: 70px; display: block; overflow: visible; }
+
+    .shade-cap   { fill: var(--fg-3); opacity: 0.6; }
+    .shade-outer { fill: var(--fg-3); opacity: 0.4; transition: opacity 0.4s; }
+    .shade-inner { fill: var(--bg-2); }
+
+    body.light .shade-outer { opacity: 0.55; }
+
+    #lamp-glow {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 80px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 15%, rgba(255,225,80,0) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.5s ease, background 0.5s ease;
+    }
+
+    body.light #lamp-glow {
+      background: radial-gradient(ellipse at 50% 15%, rgba(255,220,70,0.65) 0%, rgba(255,200,50,0.22) 45%, transparent 72%);
+      opacity: 1;
+    }
+
+    #lamp-cord-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      pointer-events: all;
+      padding: 0 12px;
+    }
+
+    #lamp-cord {
+      width: 1px;
+      height: 54px;
+      background: var(--fg-3);
+      opacity: 0.5;
+      transform-origin: top center;
+      transition: transform 0.18s ease;
+    }
+
+    #lamp-cord-wrap.pulled #lamp-cord { transform: scaleY(1.38); }
+
+    #lamp-handle {
+      width: 13px;
+      height: 13px;
+      border: 1px solid var(--fg-3);
+      border-radius: 50%;
+      opacity: 0.5;
+      transition: transform 0.18s ease, opacity 0.2s;
+      cursor: grab;
+    }
+    #lamp-handle:active { cursor: grabbing; }
+    #lamp-cord-wrap:hover #lamp-handle { opacity: 0.95; }
+    #lamp-cord-wrap.pulled #lamp-handle { transform: translateY(30px); }
+
     /* ── REVEAL ───────────────────────────────────────────── */
     .reveal {
       opacity: 0;
@@ -717,7 +815,10 @@
     <div class="about-meta reveal">
       <div class="meta-row">
         <span class="meta-key">Position</span>
-        <span class="meta-val">Undergraduate Student</span>
+        <span class="meta-val">Undergraduate Student<br>
+         Chung Yuan Christian University<br>
+         Intelligent Computing and Big Data
+        </span>
       </div>
       <div class="meta-row">
         <span class="meta-key">Interests</span>
@@ -725,7 +826,7 @@
       </div>
       <div class="meta-row">
         <span class="meta-key">GitHub</span>
-        <span class="meta-val"><a href="https://github.com/Cliff-Sin-Ze-Yang" target="_blank">Cliff-Sin-Ze-Yang</a></span>
+        <span class="meta-val"><a href="https://github.com/CliffyangZ" target="_blank">CliffyangZ</a></span>
       </div>
       <div class="meta-row">
         <span class="meta-key">Email</span>
@@ -862,6 +963,23 @@
 
 </main>
 
+<!-- LAMP WIDGET -->
+<div id="lamp-widget" aria-label="Toggle theme">
+  <div id="lamp-wire-top"></div>
+  <div id="lamp-body">
+    <div id="lamp-glow"></div>
+    <svg id="lamp-shade-svg" viewBox="0 0 70 58" xmlns="http://www.w3.org/2000/svg">
+      <rect class="shade-cap" x="28" y="0" width="14" height="5" rx="1"/>
+      <polygon class="shade-outer" points="29,4 41,4 62,56 8,56"/>
+      <polygon class="shade-inner" points="31,8 39,8 58,52 12,52"/>
+    </svg>
+  </div>
+  <div id="lamp-cord-wrap" role="button" tabindex="0" aria-label="Pull cord to toggle light / dark">
+    <div id="lamp-cord"></div>
+    <div id="lamp-handle"></div>
+  </div>
+</div>
+
 <script>
 /* ── VAN GOGH SWIRL CANVAS (sidebar) ──────────────────────────── */
 (function () {
@@ -904,7 +1022,8 @@
 
   function frame() {
     time += 0.004;
-    ctx.fillStyle = 'rgba(13,13,13,0.04)';
+    const isLight = document.body.classList.contains('light');
+    ctx.fillStyle = isLight ? 'rgba(242,239,232,0.045)' : 'rgba(13,13,13,0.04)';
     ctx.fillRect(0, 0, W, H);
 
     for (let i = 0; i < particles.length; i++) {
@@ -914,7 +1033,7 @@
       const vy = Math.sin(a) * p.speed;
 
       const fade   = 1 - p.life / p.maxLife;
-      const bright = 120 + Math.round(fade * 100);
+      const bright = isLight ? Math.round(fade * 90) : 120 + Math.round(fade * 100);
       ctx.strokeStyle = `rgba(${bright},${bright},${bright},${p.alpha * fade})`;
       ctx.lineWidth   = p.width;
       ctx.beginPath();
@@ -958,6 +1077,48 @@
 
   sections.forEach(s => obs.observe(s));
   if (links.length) links[0].classList.add('active');
+})();
+
+/* ── LAMP THEME TOGGLE ────────────────────────────────────────── */
+(function () {
+  const cordWrap = document.getElementById('lamp-cord-wrap');
+  let isDark = true;
+  let animating = false;
+
+  function toggleTheme() {
+    if (animating) return;
+    animating = true;
+    cordWrap.classList.add('pulled');
+    setTimeout(() => {
+      isDark = !isDark;
+      document.body.classList.toggle('light', !isDark);
+      cordWrap.classList.remove('pulled');
+      setTimeout(() => { animating = false; }, 120);
+    }, 200);
+  }
+
+  cordWrap.addEventListener('click', toggleTheme);
+  cordWrap.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); }
+  });
+
+  let dragging = false, dragStart = 0, triggered = false;
+  cordWrap.addEventListener('mousedown', e => {
+    dragging = true; triggered = false; dragStart = e.clientY; e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging || triggered) return;
+    if (e.clientY - dragStart > 18) { triggered = true; toggleTheme(); }
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+
+  cordWrap.addEventListener('touchstart', e => {
+    triggered = false; dragStart = e.touches[0].clientY;
+  }, { passive: true });
+  cordWrap.addEventListener('touchmove', e => {
+    if (triggered) return;
+    if (e.touches[0].clientY - dragStart > 18) { triggered = true; toggleTheme(); }
+  }, { passive: true });
 })();
 
 /* ── SCROLL REVEAL ────────────────────────────────────────────── */
